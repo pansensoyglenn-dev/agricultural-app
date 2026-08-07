@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Valley and Creeks Farm · Professional Plantation Management</title>
+  <meta name="description" content="Enterprise-grade plantation management software tracking labor, inventory, harvests, and profitability with real-time analytics, multi-user support, and professional reporting.">
+  <meta name="theme-color" content="#1a472a">
+  
+  <!-- PWA Support -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.31/dist/jspdf.plugin.autotable.min.js" defer></script>
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay" role="status" aria-label="Loading">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <div style="color:var(--muted);font-size:13px;">Loading your farm data...</div>
+    </div>
+  </div>
+
+  <!-- Login Screen -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-container">
+      <div class="login-logo">
+        <svg viewBox="0 0 80 80" fill="none" aria-hidden="true">
+          <path d="M25 15c-12 0-16 10-16 20s8 18 16 18h12" stroke="#4CAF50" stroke-width="8" stroke-linecap="round"/>
+          <path d="M55 65c12 0 16-10 16-20s-8-18-16-18H43" stroke="#FFC107" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="3" fill="#1a472a"/>
+          <circle cx="60" cy="60" r="3" fill="#1a472a"/>
+        </svg>
+        <h1>Valley and Creeks Farm</h1>
+        <p class="subtitle">Professional Plantation Management</p>
+      </div>
+      
+      <div class="login-form">
+        <div class="field">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" placeholder="Enter your username" autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password">
+        </div>
+        <button class="btn-primary btn-block" onclick="handleLogin()">Sign In</button>
+        <div class="login-footer">
+          <span>Demo credentials: admin / admin123</span>
+          <span class="login-hint">⚡ Offline mode available</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div class="shell" id="mainApp" style="display:none;">
+    <!-- Header -->
+    <header class="hero hero-wrap" role="banner">
+      <div class="hero-left">
+        <svg class="hero-logo" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <path d="M20 12c-10 0-14 8-14 16s6 14 14 14h10" stroke="#4CAF50" stroke-width="8" stroke-linecap="round"/>
+          <path d="M44 52c10 0 14-8 14-16s-6-14-14-14H34" stroke="#FFC107" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="16" cy="16" r="2.6" fill="#1a472a"/>
+          <circle cx="48" cy="48" r="2.6" fill="#1a472a"/>
+        </svg>
+        <div>
+          <h1>Valley and Creeks Farm</h1>
+          <p>Professional Plantation Management</p>
+        </div>
+      </div>
+      
+      <div class="hero-right">
+        <div class="sync-status" id="syncStatus">
+          <span class="sync-dot" id="syncDot"></span>
+          <span id="syncText">Synced</span>
+        </div>
+        <span class="badge" id="record-count-badge">0 records</span>
+        <button class="home-btn" id="homeBtn" aria-label="Dashboard" title="Dashboard">🏠</button>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu" aria-expanded="false">☰</button>
+        
+        <div class="hamburger-dropdown" id="hamburgerDropdown">
+          <a data-view="dashboard">📊 Dashboard</a>
+          <a data-view="add">➕ New Record</a>
+          <a data-view="records">📋 Records</a>
+          <a data-view="activities">📔 Daily Journal</a>
+          <div class="submenu-label">📊 Financial</div>
+          <a data-view="business">🏭 Business Ledger</a>
+          <a data-view="personal">👤 Personal Account</a>
+          <a data-view="capital">💰 Capital & Loans</a>
+          <a data-view="reports">📈 Profit & Loss</a>
+          <div class="submenu-label">🌴 Plantations</div>
+          <div id="plantation-submenu"></div>
+          <div class="submenu-label">👷 Operations</div>
+          <a data-view="workers">👷 Workers</a>
+          <a data-view="advances">💵 Advances</a>
+          <a data-view="payroll">🧾 Payroll</a>
+          <a data-view="inventory">📦 Inventory</a>
+          <a data-view="planning">🗓️ Planning</a>
+          <div class="submenu-label">⚙️ Settings</div>
+          <a data-view="users">👥 Users & Roles</a>
+          <a data-view="about">🌱 About</a>
+          <a onclick="handleLogout()">🚪 Logout</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Quick Stats Bar -->
+    <div class="quick-stats" id="quickStats">
+      <div class="stat-item">
+        <span class="stat-label">Today's Date</span>
+        <span class="stat-value" id="currentDateDisplay"></span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Business Expenses</span>
+        <span class="stat-value" id="quickBusinessTotal">₱0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Net Profit</span>
+        <span class="stat-value" id="quickNetProfit">₱0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Records Today</span>
+        <span class="stat-value" id="quickTodayRecords">0</span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content">
+      <!-- Dashboard View -->
+      <section class="view active" id="view-dashboard" role="tabpanel">
+        <div class="card" id="alerts-card" style="display:none;">
+          <h2>🔔 Alerts <span class="n" id="alerts-count-label"></span></h2>
+          <div id="alerts-list"></div>
+        </div>
+        
+        <div class="card">
+          <h2>📊 Executive Dashboard</h2>
+          <div id="dashboard-stats" class="grid cols-4" style="margin-bottom:16px;"></div>
+        </div>
+
+        <div class="card">
+          <h2>🌾 Agriculture Overview</h2>
+          <div class="grid cols-4" id="vertical-ag-stats"></div>
+          <div style="background: var(--panel-alt); padding: 16px; border-radius: var(--radius); margin-top: 12px; border-left: 4px solid var(--good);">
+            <h3 style="margin: 0 0 8px 0; font-size: 14px; color: var(--good);">🌱 Seasonal Planting Advice</h3>
+            <p style="margin: 0; color: var(--muted); font-size: 13px;">
+              Based on current market demand and seasonal conditions, prioritize high-value crops like Tomato, Potato, and String Beans.
+              Use the <strong>Planning</strong> tab to schedule planting dates.
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>📈 Monthly Financial Trend</h2>
+          <div class="chart-container" style="height:280px;"><canvas id="monthlyChart"></canvas></div>
+        </div>
+
+        <div class="card">
+          <h2>🥧 Expenditure by Plantation</h2>
+          <div class="chart-container" style="height:280px;"><canvas id="plantationChart"></canvas></div>
+        </div>
+      </section>
+
+      <!-- Add Record View -->
+      <section class="view" id="view-add" role="tabpanel">
+        <div class="card">
+          <h2 id="form-title">📝 New Business Record</h2>
+          <div class="auto-save-indicator" id="auto-save-indicator">
+            <span class="dot" id="auto-save-dot"></span>
+            <span id="auto-save-text">Auto-save</span>
+          </div>
+
+          <div class="field">
+            <label for="category-toggle">Expense Category</label>
+            <div class="category-toggle" id="category-toggle" role="group">
+              <button type="button" id="cat-business-btn" class="active-business" onclick="setCategory('business')">🏭 Business</button>
+              <button type="button" id="cat-personal-btn" onclick="setCategory('personal')">👤 Personal</button>
+            </div>
+          </div>
+
+          <!-- Business Fields -->
+          <div id="business-fields">
+            <div class="grid cols-2">
+              <div class="field">
+                <label for="f-type">Plantation Type</label>
+                <select id="f-type"></select>
+              </div>
+              <div class="field">
+                <label for="f-date">Date</label>
+                <input type="date" id="f-date">
+              </div>
+            </div>
+            
+            <div class="field" id="f-section-field" style="display:none;">
+              <label for="f-section">Section</label>
+              <select id="f-section"></select>
+            </div>
+
+            <div class="grid cols-3">
+              <div class="field">
+                <label for="f-yield">🌾 Yield (kg)</label>
+                <input type="number" id="f-yield" min="0" step="0.1" placeholder="0" oninput="updateTotals()">
+              </div>
+              <div class="field">
+                <label for="f-price-per-kg">₱/kg Price</label>
+                <input type="number" id="f-price-per-kg" min="0" step="0.01" placeholder="0" oninput="updateTotals()">
+              </div>
+              <div class="field">
+                <label for="f-revenue">💰 Total Revenue</label>
+                <input type="number" id="f-revenue" min="0" step="0.01" placeholder="Auto-calculated" readonly style="background:var(--panel);">
+              </div>
+            </div>
+
+            <div class="divider-snake"></div>
+
+            <h3>👷 Workers <span class="n" id="worker-count-label">(0)</span></h3>
+            <div class="row-list" id="worker-rows" role="list"></div>
+            <button class="btn-ghost btn-sm" onclick="addWorkerRow()">+ Add Worker</button>
+
+            <div class="divider-snake"></div>
+
+            <h3>📦 Items <span class="n" id="item-count-label">(0)</span></h3>
+            <div class="row-list" id="item-rows" role="list"></div>
+            <button class="btn-ghost btn-sm" onclick="addItemRow()">+ Add Item</button>
+
+            <div class="totals-strip">
+              <div class="t">Labor<b id="t-labor">₱0.00</b></div>
+              <div class="t">Items<b id="t-items">₱0.00</b></div>
+              <div class="t grand">Total<b id="t-grand">₱0.00</b></div>
+            </div>
+          </div>
+
+          <!-- Personal Fields -->
+          <div id="personal-fields" style="display:none;">
+            <p style="color:var(--muted);font-size:13px;">Personal expenses are kept separate from plantation costs.</p>
+            <div class="field">
+              <label for="p-date">Date</label>
+              <input type="date" id="p-date">
+            </div>
+            <div class="row-list" id="p-item-rows" role="list"></div>
+            <button class="btn-ghost btn-sm" onclick="addPersonalItemRow()">+ Add Personal Item</button>
+            <div class="totals-strip">
+              <div class="t grand">Personal Total<b id="p-t-grand">₱0.00</b></div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-primary" onclick="saveRecord()" id="save-btn">💾 Save Record</button>
+            <button class="btn-ghost" onclick="confirmClearForm()">Clear Form</button>
+            <button class="btn-ghost" onclick="loadDraft()">Load Draft</button>
+            <button class="btn-fuchsia" onclick="exportBackup()">⬇ Backup</button>
+            <button class="btn-success" onclick="document.getElementById('restore-input').click()">⬆ Restore</button>
+            <input type="file" id="restore-input" accept=".json" style="display:none" onchange="importBackup(event)">
+          </div>
+        </div>
+      </section>
+
+      <!-- Records View -->
+      <section class="view" id="view-records" role="tabpanel">
+        <div class="card">
+          <h2>🔍 Search & Filter</h2>
+          <div class="search-bar">
+            <select id="s-type"><option value="">All Plantations</option></select>
+            <input type="date" id="s-from" placeholder="From">
+            <input type="date" id="s-to" placeholder="To">
+            <input type="text" id="s-worker" placeholder="Worker Name">
+            <input type="number" id="s-min-amount" placeholder="Min ₱">
+            <input type="number" id="s-max-amount" placeholder="Max ₱">
+            <button class="btn-ghost btn-sm" onclick="clearFilters()">Clear</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>📋 Business Records <span class="n" id="records-count-label"></span></h2>
+          <div id="records-table"></div>
+        </div>
+      </section>
+
+      <!-- Other Views (abbreviated for length - will be populated by JavaScript) -->
+      <section class="view" id="view-activities" role="tabpanel"></section>
+      <section class="view" id="view-business" role="tabpanel"></section>
+      <section class="view" id="view-personal" role="tabpanel"></section>
+      <section class="view" id="view-capital" role="tabpanel"></section>
+      <section class="view" id="view-reports" role="tabpanel"></section>
+      <section class="view" id="view-workers" role="tabpanel"></section>
+      <section class="view" id="view-advances" role="tabpanel"></section>
+      <section class="view" id="view-payroll" role="tabpanel"></section>
+      <section class="view" id="view-inventory" role="tabpanel"></section>
+      <section class="view" id="view-planning" role="tabpanel"></section>
+      <section class="view" id="view-users" role="tabpanel"></section>
+      <section class="view" id="view-about" role="tabpanel"></section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bottom-indicators" onclick="navigateTo('business')" role="contentinfo">
+      <div class="indicator">
+        <span class="label">Business Expenses</span>
+        <span class="value" id="bottom-business-total">₱0.00</span>
+      </div>
+      <div class="indicator">
+        <span class="label">Personal Expenses</span>
+        <span class="value personal" id="bottom-personal-total">₱0.00</span>
+      </div>
+      <div class="indicator">
+        <span class="label">Net Profit</span>
+        <span class="value" id="bottom-net-profit">₱0.00</span>
+      </div>
+      <div class="indicator">
+        <span class="label">Total Records</span>
+        <span class="value" id="bottom-total-records">0</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="confirm-modal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 id="confirm-modal-title">Confirm</h3>
+      <p id="confirm-modal-text">Are you sure?</p>
+      <div class="btn-row">
+        <button class="btn-danger" id="confirm-yes">Yes</button>
+        <button class="btn-ghost" id="confirm-no">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
