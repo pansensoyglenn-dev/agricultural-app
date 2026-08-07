@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Valley and Creeks · Plantation Ledger</title>
+  <meta name="description" content="Professional plantation management software tracking labor costs, inventory, harvest yields, and profitability across coconut, maize, durian, lanzones, and vegetable farms. Real-time analytics & reporting.">
+  <meta name="keywords" content="plantation management, farm inventory, labor tracking, agricultural software, crop management, harvest tracking, farm accounting, plantation ledger, coconut farming, maize production, durian plantation, lanzones farming, vegetable farming, farm analytics">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Glenn | PoeticGlenn">
+  <meta name="language" content="English">
+  <link rel="canonical" href="https://pansensoyglenn-dev.github.io/poetic-codes/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Valley and Creeks Farm · Smart Farm Management">
+  <meta property="og:description" content="Track labor, inventory, harvest yields, and profitability across multiple plantation types. Real-time analytics, worker management, and financial reporting.">
+  <meta property="og:url" content="https://pansensoyglenn-dev.github.io/poetic-codes/">
+  <meta property="og:site_name" content="Valley and Creeks Farm">
+  <meta property="og:image" content="https://pansensoyglenn-dev.github.io/poetic-codes/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@PoeticGlenn">
+  <meta name="twitter:creator" content="@PoeticGlenn">
+  <meta name="twitter:title" content="Valley and Creeks Farm · Smart Farm Management">
+  <meta name="twitter:description" content="Professional plantation management with labor tracking, inventory control, and real-time profitability analytics.">
+  <meta name="theme-color" content="#0b0d14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Valley and Creeks Farm · Plantation Ledger",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "All (Web-based)",
+    "browserRequirements": "Requires JavaScript and IndexedDB support",
+    "description": "Comprehensive plantation management system tracking labor costs, inventory, harvest yields, and profitability across coconut, maize, durian, lanzones, and vegetable plantations with real-time analytics and reporting.",
+    "featureList": [
+      "Labor cost tracking",
+      "Inventory management",
+      "Harvest yield recording",
+      "Profitability analytics",
+      "Worker management",
+      "Cash advance tracking",
+      "Capital management",
+      "Export reports",
+      "Real-time dashboards",
+      "Business/Personal expense separation",
+      "Daily expenditure vs earnings tracking"
+    ],
+    "author": {
+      "@type": "Person",
+      "name": "Glenn",
+      "alternateName": "PoeticGlenn",
+      "url": "https://github.com/pansensoyglenn-dev"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "PHP"
+    }
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="loading-overlay" id="loading-overlay" role="status" aria-label="Loading">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <div style="color:var(--muted);font-size:13px;">Loading...</div>
+    </div>
+  </div>
+
+  <div class="shell" id="main-content" role="main">
+
+    <header class="hero hero-wrap" role="banner">
+      <svg class="hero-logo" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <path d="M20 12c-10 0-14 8-14 16s6 14 14 14h10" stroke="#4b8bbe" stroke-width="8" stroke-linecap="round"/>
+        <path d="M44 52c10 0 14-8 14-16s-6-14-14-14H34" stroke="#e6399b" stroke-width="8" stroke-linecap="round"/>
+        <circle cx="16" cy="16" r="2.6" fill="#0b0d14"/>
+        <circle cx="48" cy="48" r="2.6" fill="#0b0d14"/>
+      </svg>
+      <div>
+        <h1>Valley and Creeks Farm</h1>
+        <p>Smart labor &amp; inventory management for modern farms</p>
+      </div>
+      <div class="hamburger-menu">
+        <div class="custom-select-wrap" id="global-search-wrap" style="min-width:150px;">
+          <input type="text" id="global-search-input" placeholder="🔍 Search everything…" aria-label="Search all records, workers, items, advances and loans" autocomplete="off" style="min-height:44px;">
+          <div class="custom-select-menu" id="global-search-results" role="listbox" aria-label="Search results"></div>
+        </div>
+        <span class="badge" id="record-count-badge" aria-live="polite">0 records</span>
+        <button class="home-btn" id="homeBtn" aria-label="Home" title="Home">🏠</button>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu" aria-expanded="false">☰</button>
+        <div class="hamburger-dropdown" id="hamburgerDropdown">
+          <a data-view="dashboard">🏠 Home / Dashboard</a>
+          <a data-view="add">＋ New Record</a>
+          <a data-view="records">📋 Records</a>
+          <a data-view="activities">📔 Daily Journal</a>
+          <a data-view="bydate">📅 By Date</a>
+          <a data-view="workers">👷 Workers</a>
+          <a data-view="business">🏭 Business</a>
+          <a data-view="personal">👤 Personal</a>
+          <a data-view="shares">📊 Shares</a>
+          <a data-view="capital">💰 Capital</a>
+          <a data-view="advances">💵 Advances</a>
+          <a data-view="inventory">📦 Inventory</a>
+          <a data-view="payroll">🧾 Payroll</a>
+          <a data-view="planning">🗓️ Planning</a>
+          <a data-view="reports">📈 Reports</a>
+          <a data-view="loans">💳 Loans</a>
+          <a data-view="about">🌱 About</a>
+          <div class="submenu-label">🌴 By Plantation</div>
+          <div id="plantation-submenu"></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="card" style="background: linear-gradient(135deg, var(--panel) 0%, var(--panel-alt) 100%); border: 1px solid var(--blue-deep); margin-bottom: 20px;">
+      <h2 style="color: var(--fuchsia-bright); font-size: 18px; margin-bottom: 12px;">🌿 Agriculture Overview</h2>
+      <div class="grid cols-4" id="vertical-ag-stats" style="margin-bottom: 16px;">
+      </div>
+      <div style="background: var(--panel-alt); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--good);">
+        <h3 style="margin: 0 0 8px 0; font-size: 14px; color: var(--good);">🌱 Seasonal Planting Advice (July–August)</h3>
+        <p style="margin: 0 0 12px 0; color: var(--muted); font-size: 13px;">
+          Based on current market demand and seasonal conditions, prioritize these high-value crops:
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
+          <div>
+            <span style="color: var(--good);">🍅 Tomato &amp; Potato</span> — High demand, premium pricing. Focus on disease-resistant varieties and raised beds for drainage.
+          </div>
+          <div>
+            <span style="color: var(--good);">🥬 String Beans &amp; Squash</span> — Staple vegetables, consistent demand. Ensure sturdy trellises for wind protection.
+          </div>
+          <div>
+            <span style="color: var(--good);">🍆 Eggplant &amp; Zucchini</span> — Versatile and highly sought after. Plant now for harvest before the season ends.
+          </div>
+          <div>
+            <span style="color: var(--warning);">🌽 Maize Production</span> — Stable staple crop. Apply nitrogen fertilizer for vegetative growth during the rainy season.
+          </div>
+        </div>
+        <p style="margin: 12px 0 0 0; color: var(--faint); font-size: 12px;">
+          💡 Use the <strong>Planning</strong> tab to schedule planting dates and the <strong>Inventory</strong> tab to track fertilizer and seed stock.
+        </p>
+      </div>
+    </div>
+
+    <section class="view active" id="view-about" role="tabpanel" aria-labelledby="tab-about">
+      <div class="card essay">
+        <h2>🌱 The Root of Civilization <span class="n">why agriculture is essential in an age of population explosion</span></h2>
+
+        <div class="toc" role="navigation" aria-label="Table of contents">
+          <a href="#about-intro">Introduction</a>
+          <a href="#about-neolithic">The Neolithic Revolution</a>
+          <a href="#about-civilization">Rise of Civilization</a>
+          <a href="#about-medieval">Medieval Innovations</a>
+          <a href="#about-columbian">The Columbian Exchange</a>
+          <a href="#about-industrial">Agricultural &amp; Industrial Revolutions</a>
+          <a href="#about-20th">20th-Century Green Revolution</a>
+          <a href="#about-present">Agriculture Today</a>
+        </div>
+
+        <h3 id="about-intro">Introduction</h3>
+        <p>Every generation likes to imagine that it has finally outgrown the soil — that software, finance, and information have replaced the farm as the true engine of society. It is an understandable illusion, and a dangerous one. Behind every line of code, every currency, and every city skyline sits a simpler and older fact: someone, somewhere, has to grow the food. Agriculture is not a relic of a pre-industrial past; it is the load-bearing wall of the present social order, and it is being tested more severely today than at almost any point in recorded history.</p>
+        <p>The reason is arithmetic before it is anything else. The human population, which took roughly two hundred thousand years to reach one billion around 1800, has since ballooned to more than 8.3 billion people as of 2026 — with the United Nations projecting a peak near 10.4 billion later this century before growth finally levels off. Getting from one billion to eight billion took a little over two centuries; getting from seven to eight billion took barely a decade. That is not gradual change. It is a demographic explosion, and every one of those additional mouths needs to be fed on essentially the same finite base of arable land, fresh water, and topsoil that existed before the explosion began.</p>
+        <p>This is why agriculture cannot be treated as a legacy sector. It is the precondition for every other kind of social stability people now take for granted — political order, urbanization, public health, even the leisure time that allows a society to produce art, science, and technology in the first place. When agricultural systems strain, so does everything built on top of them: food prices rise, migration accelerates, governments fall, and conflicts ignite over land and water. To understand why agriculture is essential to the present social condition, it helps to trace how it got here — because the story of agriculture is, in a real sense, the story of civilization itself.</p>
+
+        <h3 id="about-neolithic">The Deep Roots: The Neolithic Revolution</h3>
+        <p>For the overwhelming majority of human existence, people did not farm. They foraged, hunted, and moved with the seasons in small bands that rarely stayed anywhere long enough to need permanent shelter, let alone government. The shift away from this way of life — commonly called the Neolithic Revolution — began roughly twelve thousand years ago in the Fertile Crescent, a stretch of the Middle East spanning parts of modern-day Iraq, Syria, Turkey, and the Levant. Independently, similar transitions unfolded in the Yangtze and Yellow River valleys of China, in Mesoamerica, in the Andes, and in parts of Africa and New Guinea, each domesticating the crops and animals native to their region: wheat and barley in the Near East, rice and millet in East Asia, maize and squash in the Americas.</p>
+        <p>Domestication was slow and incremental, but its consequences were not. A hunter-gatherer band could support only as many people as the surrounding land could yield through foraging, which capped group size at a few dozen individuals. A farming community, by contrast, could produce a calorie surplus — more food than the people growing it needed to survive. That surplus is arguably the single most important invention in human history, because it made everything else possible. Surplus grain could be stored, taxed, and redistributed. It could feed specialists who were not themselves growing food: soldiers, priests, scribes, and eventually merchants and artisans. Villages grew into towns, towns into cities, and cities into the first states.</p>
+
+        <h3 id="about-civilization">Agriculture and the Rise of Civilization</h3>
+        <p>The first great civilizations — Sumer, Egypt, the Indus Valley, and early China — all formed along rivers capable of supporting intensive farming: the Tigris and Euphrates, the Nile, the Indus, the Yellow River. These rivers did more than water crops; their annual floods deposited nutrient-rich silt that renewed soil fertility year after year, allowing dense, permanent populations to persist in one place for millennia. Irrigation canals, granaries, and calendars for planting and harvest became some of the earliest technologies of organized society, and the administrative need to track grain stores is widely credited as a driving force behind the invention of writing itself.</p>
+        <p>Agricultural surplus also produced the first true social hierarchies. Whoever controlled the granaries and the irrigation works controlled political power, which is why so much of ancient statecraft — from Egyptian pharaonic authority to Chinese imperial mandates — was justified through the ruler's relationship to the harvest. Bad harvests toppled dynasties; good ones legitimized them. This link between food security and political legitimacy has never actually disappeared; it has only become less visible in wealthy, food-secure nations.</p>
+
+        <h3 id="about-medieval">The Middle Ages and the Agricultural Innovations of Necessity</h3>
+        <p>Through the medieval period, agriculture across Europe and Asia advanced through incremental but consequential innovation rather than sudden revolution. The heavy plow, better suited to Europe's dense clay soils than the lighter Mediterranean ard, opened new farmland to cultivation. The three-field crop rotation system, which alternated fields between different grains and a fallow period, increased productivity and reduced the soil exhaustion that had plagued earlier two-field systems. Horse collars that did not choke the animal allowed horses to replace oxen as draft power, speeding up plowing considerably. Watermills and windmills mechanized grinding, freeing labor for other tasks.</p>
+        <p>These changes were not merely technical footnotes. They allowed European populations to grow substantially between roughly 1000 and 1300, fueling town growth, trade networks, and eventually the conditions for the Renaissance. When agricultural systems faltered — as during the Great Famine of 1315–1317, brought on by catastrophic weather across Northern Europe — the resulting instability and hunger are understood to have weakened populations right before the Black Death arrived, compounding the fourteenth century's demographic catastrophe. The lesson recurs throughout history: agricultural fragility and social fragility travel together.</p>
+
+        <h3 id="about-columbian">The Columbian Exchange and Global Agricultural Reshuffling</h3>
+        <p>The voyages of European exploration beginning in the late fifteenth century triggered what is now called the Columbian Exchange, an unprecedented transfer of crops, animals, and diseases between the Eastern and Western Hemispheres. Potatoes, maize, tomatoes, and cassava moved from the Americas to Europe, Africa, and Asia; wheat, rice, sugarcane, and livestock moved in the opposite direction. The potato in particular transformed European agriculture, offering far higher calorie yields per acre than traditional grains and helping sustain the population growth that would later feed the labor pools of the Industrial Revolution. Maize became a staple across parts of Africa and Asia. This global reshuffling of crops is one of the most underappreciated turning points in agricultural history, because it decoupled regional diets from regional origins and set the template for the globally interconnected food system that exists today.</p>
+
+        <h3 id="about-industrial">The Agricultural and Industrial Revolutions</h3>
+        <p>Beginning in eighteenth-century Britain, a second agricultural revolution unfolded alongside — and helped enable — the Industrial Revolution. Enclosure of common lands, selective livestock breeding, improved crop rotations such as the four-field Norfolk system, and new tools like Jethro Tull's seed drill sharply raised yields per acre and per worker. Crucially, this meant fewer farmers could feed more people, freeing a growing share of the population to leave the countryside for factory work in expanding cities. Agricultural productivity, in other words, was the precondition for industrialization, not merely its backdrop. Without a farming sector capable of feeding urban workers who no longer grew their own food, mass industrial labor forces simply could not have existed.</p>
+
+        <h3 id="about-20th">The Twentieth Century: Mechanization, Chemistry, and the Green Revolution</h3>
+        <p>The twentieth century brought agriculture's most dramatic transformation yet. The internal combustion engine put tractors and combine harvesters in fields once worked entirely by hand and draft animals. The Haber-Bosch process, developed in the early 1900s, made it possible to synthesize nitrogen fertilizer from the atmosphere at industrial scale — a single chemical innovation that is estimated to sustain the food supply for roughly half of the world's population today, since nitrogen had previously been the hard limit on soil fertility almost everywhere.</p>
+        <p>The most consequential agricultural episode of the century, however, was the Green Revolution of the 1940s through the 1970s. Plant breeders, most famously Norman Borlaug, developed high-yield, disease-resistant dwarf varieties of wheat and rice that, combined with irrigation, synthetic fertilizers, and pesticides, dramatically increased yields across Latin America and Asia. Countries such as India and Mexico moved from the brink of famine to food self-sufficiency within a generation. The Green Revolution is widely credited with preventing mass starvation even as the world's population more than doubled between 1950 and the early 1990s — a direct, empirical demonstration of the thesis that agricultural innovation is what allows population growth to continue without collapse.</p>
+
+        <h3 id="about-present">Agriculture in the Present Social Condition</h3>
+        <p>Today's agricultural challenge is, in some ways, the same one every civilization before has faced, only at a scale and speed no previous generation has confronted. Feeding a population that has already passed 8.3 billion — and is still adding tens of millions of people a year even as growth rates slow — requires producing more food than ever before, on essentially the same amount of arable land, while confronting soil degradation, water stress, and a changing climate that makes yields less predictable in many regions. Urbanization means a shrinking share of the population actually farms, even as demand for food keeps rising; the burden of feeding cities now rests on a proportionally smaller agricultural workforce than at any point in human history.</p>
+        <p>This is precisely why the small-scale, meticulous side of agriculture — labor tracking, input costs, yield records, harvest shares, and the unglamorous bookkeeping that turns a plantation into a sustainable business rather than a gamble — matters as much as the large-scale innovations that make headlines. Every well-run smallholding, every accurately costed harvest, and every fairly distributed worker's share is a small contribution to the same project that began in the Fertile Crescent twelve thousand years ago: converting the labor of growing things into a surplus stable enough to support a society. The tools have changed beyond recognition — from digging sticks to Haber-Bosch nitrogen to satellite-guided combines — but the underlying necessity has not moved an inch. A civilization of eight billion people, heading toward ten billion, remains exactly as dependent on the harvest as the first villages along the Tigris and Euphrates ever were. Agriculture is not a sector of the modern economy. It is the floor the rest of the economy stands on.</p>
+
+        <p class="footer-note" style="margin-top:24px;">Written for Valley and Creeks Farm By:Glenn Junsay Pansensoy</p>
+      </div>
+    </section>
+
+    <section class="view" id="view-activities" role="tabpanel" aria-labelledby="tab-activities">
+      <div class="card">
+        <h2>📅 Farm Journal</h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">A daily article which is significant to track the a tivities in the farm.</p>
+
+        <div class="field">
+          <label for="activity-date">Entry Date</label>
+          <input type="date" id="activity-date" max="9999-12-31">
+        </div>
+
+        <div class="field">
+          <label for="activity-plantation">Plantation (optional)</label>
+          <select id="activity-plantation"><option value="">— general / not specific —</option></select>
+        </div>
+
+        <div class="field">
+          <label for="activity-description">Daily Journal entry</label>
+          <textarea id="activity-description" rows="6" placeholder="Write today's diary entry — what happened, what was observed, decisions made, weather notes, etc."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="activity-image-input">Photo (optional)</label>
+          <div class="file-drop-zone" id="activity-image-dropzone" tabindex="0" role="button" aria-label="Upload or paste a photo for this journal entry">
+            <div id="activity-image-empty">
+              <span style="font-size:22px;display:block;margin-bottom:6px;">📷</span>
+              Tap to choose a photo, or paste one (Ctrl+V) anywhere on this form
+            </div>
+            <img id="activity-image-preview" style="display:none;width:100%;height:auto;border-radius:8px;" alt="Journal entry photo preview">
+            <input type="file" id="activity-image-input" accept="image/*" aria-label="Choose a photo">
+          </div>
+          <div class="btn-row" id="activity-image-remove-row" style="display:none;margin-top:8px;">
+            <button type="button" class="btn-ghost btn-sm" onclick="removeActivityImage()">✕ Remove photo</button>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" id="activity-save-btn" onclick="saveActivity()">Save entry</button>
+          <button class="btn-ghost" id="activity-cancel-btn" onclick="clearActivityForm()" style="display:none;">Cancel edit</button>
+        </div>
+      </div>
+
+      <div class="card essay">
+        <h2>Daily Journal Entries <span class="n" id="activity-count-label">(0)</span></h2>
+        <div id="activity-records"></div>
+      </div>
+    </section>
+
+    <div class="tabs" style="display:none;">
+      <button class="tab" data-view="dashboard">📊 Dashboard</button>
+      <button class="tab" data-view="add">＋ New Record</button>
+      <button class="tab" data-view="records">📋 Records</button>
+      <button class="tab" data-view="activities">📔 Daily Journal</button>
+      <button class="tab" data-view="bydate">📅 By Date</button>
+      <button class="tab" data-view="workers">👷 Workers</button>
+      <button class="tab" data-view="business">🏭 Business</button>
+      <button class="tab" data-view="personal">👤 Personal</button>
+      <button class="tab" data-view="shares">📊 Shares</button>
+      <button class="tab" data-view="capital">💰 Capital</button>
+      <button class="tab" data-view="advances">💵 Advances</button>
+      <button class="tab" data-view="inventory">📦 Inventory</button>
+      <button class="tab" data-view="payroll">🧾 Payroll</button>
+      <button class="tab" data-view="planning">🗓️ Planning</button>
+      <button class="tab" data-view="reports">📈 Reports</button>
+      <button class="tab" data-view="loans">💳 Loans</button>
+      <button class="tab" data-view="about">🌱 About</button>
+    </div>
+
+    <section class="view" id="view-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
+      <div class="card" id="alerts-card" style="display:none;">
+        <h2>🔔 Alerts <span class="n" id="alerts-count-label"></span></h2>
+        <div id="alerts-list"></div>
+      </div>
+      <div class="card">
+        <h2>🌾 Dashboard <span class="n">at a glance</span></h2>
+        <div id="dashboard-stats" class="grid cols-4" style="margin-bottom:16px;"></div>
+      </div>
+      <div class="card">
+        <h2>🌤️ Weather <span class="n" id="weather-updated-label"></span></h2>
+        <div class="grid cols-3" style="margin-bottom:10px;">
+          <div class="field" style="margin-bottom:0;">
+            <label for="wx-lat">Latitude</label>
+            <input type="number" id="wx-lat" step="0.0001" placeholder="e.g. 7.6">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label for="wx-lon">Longitude</label>
+            <input type="number" id="wx-lon" step="0.0001" placeholder="e.g. 122.6">
+          </div>
+          <div class="field" style="margin-bottom:0; align-self:end; display:flex; gap:8px;">
+            <button class="btn-ghost btn-sm" onclick="useMyLocationForWeather()">📍 Use my location</button>
+            <button class="btn-primary btn-sm" onclick="saveWeatherLocation()">Save &amp; refresh</button>
+          </div>
+        </div>
+        <div id="weather-out"></div>
+      </div>
+      <div class="card">
+        <h2>📆 Daily Expenditure vs Earnings <span class="n" id="daily-chart-range-label"></span></h2>
+        <div class="chart-container" style="height:260px;"><canvas id="dailyChart" aria-label="Daily expenditure versus earnings chart"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>📈 Monthly Trend</h2>
+        <div class="chart-container"><canvas id="monthlyChart" aria-label="Monthly expenditure trend chart"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>🥧 Expenditure by Plantation</h2>
+        <div class="chart-container"><canvas id="plantationChart" aria-label="Expenditure distribution by plantation chart"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>💰 Profit/Loss Overview</h2>
+        <div class="chart-container"><canvas id="profitChart" aria-label="Profit and loss overview chart"></canvas></div>
+      </div>
+    </section>
+    <section class="view" id="view-add" role="tabpanel" aria-labelledby="tab-add">
+      <div class="card">
+        <h2 id="form-title">Record a day's expenditure</h2>
+        <div class="auto-save-indicator" id="auto-save-indicator" aria-live="polite">
+          <span class="dot" id="auto-save-dot"></span>
+          <span id="auto-save-text">Auto-save</span>
+        </div>
+
+        <div class="field" style="margin-bottom:14px;">
+          <label for="category-toggle">Expense category</label>
+          <div class="category-toggle" id="category-toggle" role="group" aria-label="Expense category toggle">
+            <button type="button" id="cat-business-btn" class="active-business" onclick="setCategory('business')" aria-pressed="true">🏭 Business (plantation)</button>
+            <button type="button" id="cat-personal-btn" onclick="setCategory('personal')" aria-pressed="false">👤 Personal</button>
+          </div>
+        </div>
+
+        <div id="business-fields">
+          <div class="grid cols-2">
+            <div class="field">
+              <label for="f-type">Plantation type</label>
+              <select id="f-type" aria-required="true"></select>
+            </div>
+            <div class="field">
+              <label for="f-date">Date</label>
+              <input type="date" id="f-date" max="9999-12-31" aria-required="true">
+            </div>
+          </div>
+          <div class="field" id="f-section-field" style="display:none;">
+            <label for="f-section">Section</label>
+            <select id="f-section" onchange="markDirty()"></select>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <label for="f-wage">Default daily wage (₱) — used unless a worker overrides it</label>
+            <input type="number" id="f-wage" value="350" min="0" step="0.01" aria-describedby="wage-help">
+            <span id="wage-help" style="font-size:11px;color:var(--faint);">Set the default wage for workers</span>
+          </div>
+
+          <div class="divider-snake"></div>
+
+          <div class="grid cols-3" style="margin-bottom:10px;">
+            <div class="field">
+              <label for="f-yield">🌾 Yield / Quantity harvested (kg)</label>
+              <input type="number" id="f-yield" min="0" step="0.1" value="0" placeholder="e.g. 150 kg" oninput="updateGrossIncomePreview();updateTotals();markDirty()">
+            </div>
+            <div class="field">
+              <label for="f-price-per-kg">₱/kg Price per kg (₱)</label>
+              <input type="number" id="f-price-per-kg" min="0" step="0.01" value="0" placeholder="e.g. 30" oninput="updateGrossIncomePreview();updateTotals();markDirty()">
+            </div>
+            <div class="field">
+              <label for="f-revenue">💰 Total Gross Income (₱) <span class="tag">auto</span></label>
+              <input type="number" id="f-revenue" min="0" step="0.01" value="0" placeholder="e.g. 4500" oninput="updateTotals();markDirty()">
+              <span style="font-size:11px;color:var(--faint);">= Yield × Price per kg — auto-filled, editable if you need to adjust</span>
+            </div>
+          </div>
+
+          <div class="divider-snake"></div>
+
+          <h2>Workers <span class="n" id="worker-count-label">(0)</span></h2>
+          <div class="row-list" id="worker-rows" role="list"></div>
+          <button class="btn-ghost btn-sm" onclick="addWorkerRow()" aria-label="Add worker">+ Add worker</button>
+
+          <div class="divider-snake"></div>
+
+          <h2>Items purchased <span class="n" id="item-count-label">(0)</span></h2>
+          <div class="row-list" id="item-rows" role="list"></div>
+          <button class="btn-ghost btn-sm" onclick="addItemRow()" aria-label="Add item">+ Add item</button>
+
+          <div class="totals-strip" aria-live="polite">
+            <div class="t">Labor cost<b id="t-labor">₱0.00</b></div>
+            <div class="t">Items cost<b id="t-items">₱0.00</b></div>
+            <div class="t">Yield<b id="t-yield">0 kg</b></div>
+            <div class="t">Price/kg<b id="t-price-per-kg">₱0.00</b></div>
+            <div class="t">Total Gross Income<b id="t-revenue">₱0.00</b></div>
+            <div class="t grand">Grand total<b id="t-grand">₱0.00</b></div>
+          </div>
+        </div>
+
+        <div id="personal-fields" style="display:none;">
+          <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Personal expenses are kept separate from plantation costs — they never touch your plantation totals or Net Sales. They're saved to your Personal Account tab so you can track your own spending on the side.</p>
+          <div class="field">
+            <label for="p-date">Date</label>
+            <input type="date" id="p-date" max="9999-12-31">
+          </div>
+          <div class="divider-snake"></div>
+          <h2>Personal items <span class="n" id="p-item-count-label">(0)</span></h2>
+          <div class="row-list" id="p-item-rows" role="list"></div>
+          <button class="btn-ghost btn-sm" onclick="addPersonalItemRow()" aria-label="Add personal item">+ Add item</button>
+          <div class="totals-strip">
+            <div class="t grand">Personal total<b id="p-t-grand">₱0.00</b></div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" onclick="saveRecord()" id="save-btn">Save record</button>
+          <button class="btn-ghost" onclick="confirmClearForm()">Clear form</button>
+          <button class="btn-ghost" onclick="loadDraft()" aria-label="Load saved draft">Load draft</button>
+          <button class="btn-fuchsia" onclick="exportBackup()">⬇ Backup</button>
+          <button class="btn-success" onclick="document.getElementById('restore-input').click()">⬆ Restore</button>
+          <input type="file" id="restore-input" accept=".json" style="display:none" onchange="importBackup(event)" aria-label="Restore from backup file">
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-records" role="tabpanel" aria-labelledby="tab-records">
+      <div class="card">
+        <h2>Search &amp; filter</h2>
+        <div class="search-bar" role="search">
+          <select id="s-type" aria-label="Filter by plantation type" onchange="currentPage=1;renderRecords()"><option value="">All plantation types</option></select>
+          <input type="date" id="s-from" placeholder="From" aria-label="Filter from date" oninput="currentPage=1;renderRecords()">
+          <input type="date" id="s-to" placeholder="To" aria-label="Filter to date" oninput="currentPage=1;renderRecords()">
+          <input type="text" id="s-worker" placeholder="Worker name" aria-label="Filter by worker name" oninput="currentPage=1;renderRecords()">
+          <input type="number" id="s-min-amount" placeholder="Min ₱" min="0" step="0.01" aria-label="Minimum amount" oninput="currentPage=1;renderRecords()">
+          <input type="number" id="s-max-amount" placeholder="Max ₱" min="0" step="0.01" aria-label="Maximum amount" oninput="currentPage=1;renderRecords()">
+          <button class="btn-ghost btn-sm" onclick="clearFilters()">Clear</button>
+        </div>
+        <div style="font-size:11px;color:var(--faint);margin-top:-8px;margin-bottom:10px;">
+          💡 Filters apply live as you type · <kbd>Ctrl+F</kbd> focus search · <kbd>Esc</kbd> clear filters
+        </div>
+      </div>
+      <div class="card">
+        <h2>Business records <span class="n" id="records-count-label"></span></h2>
+        <div id="records-table"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-bydate" role="tabpanel" aria-labelledby="tab-bydate">
+      <div class="card">
+        <h2>View a day's full summary</h2>
+        <div class="grid cols-3">
+          <div class="field">
+            <label for="d-date">Date</label>
+            <input type="date" id="d-date" max="9999-12-31">
+          </div>
+          <div class="field" style="align-self:end;">
+            <button class="btn-primary" onclick="renderDateSummary()">View summary</button>
+          </div>
+          <div class="field" style="align-self:end;">
+            <select id="d-quick" onchange="pickQuickDate()" aria-label="Jump to a recorded date">
+              <option value="">Jump to a recorded date…</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="date-summary-out"></div>
+    </section>
+
+    <section class="view" id="view-workers" role="tabpanel" aria-labelledby="tab-workers">
+      <div class="card">
+        <h2>Employment history</h2>
+        <div class="grid cols-3">
+          <div class="field">
+            <label for="w-name">Worker name</label>
+            <input type="text" id="w-name" placeholder="e.g. Rico" aria-label="Enter worker name to search">
+          </div>
+          <div class="field" style="align-self:end;">
+            <button class="btn-primary" onclick="renderWorkerHistory()">Search</button>
+          </div>
+          <div class="field" style="align-self:end;">
+            <select id="w-quick" onchange="pickQuickWorker()" aria-label="Jump to a known worker">
+              <option value="">Jump to a known worker…</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="worker-history-out"></div>
+    </section>
+
+    <section class="view" id="view-business" role="tabpanel" aria-labelledby="tab-business">
+      <div class="card">
+        <h2>Business Account <span class="n" id="business-count-label"></span></h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">All plantation (business) expenditure logged from the New Record tab. These never mix with your Personal Account — this is your dedicated business ledger view.</p>
+        <div id="business-stats" class="grid cols-4" style="margin-bottom:16px;"></div>
+      </div>
+      <div class="card">
+        <h2>By plantation type</h2>
+        <div id="business-by-type"></div>
+      </div>
+      <div class="card" id="business-sections-card" style="display:none;">
+        <h2>📐 Section Breakdown <span class="n">Section 1 / Section 2 / Section 3</span></h2>
+        <p style="color:var(--muted); font-size:12.5px; margin:-8px 0 14px;">Records without an assigned section are counted under Section 1 by default.</p>
+        <div id="business-sections"></div>
+      </div>
+      <div class="card">
+        <h2>All business records <span class="n" id="business-records-count-label"></span></h2>
+        <div id="business-table"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-personal" role="tabpanel" aria-labelledby="tab-personal">
+      <div class="card">
+        <h2>Personal Account <span class="n" id="personal-count-label"></span></h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Expenses logged as "Personal" from the New Record tab. These are never included in plantation totals, Business Expenditure, or Net Sales/Net Profit calculations.</p>
+        <div id="personal-stats" class="grid cols-3" style="margin-bottom:16px;"></div>
+        <div class="table-wrapper" id="personal-table-wrapper">
+          <div id="personal-table"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-shares" role="tabpanel" aria-labelledby="tab-shares">
+      <div class="card">
+        <h2>Worker Harvest Shares</h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">
+          Maize Production and String Beans Plantation pay workers a share of the harvest on top of their logged wages.
+          Maize workers split <strong>30%</strong> of that plantation's Net Sales (you keep the other <strong>70%</strong>); String Beans workers split <strong>40%</strong> of theirs (you keep <strong>60%</strong>).
+          Net Sales here is Gross Sales minus that plantation's Total Expenditure — Gross Sales fills in automatically from every sale logged on that plantation's page, plus any additional revenue you enter manually in the Reports tab.
+          Each worker's cut is proportional to the labor-days (full days + half days × 0.5) they logged on that plantation type.
+        </p>
+        <div class="grid cols-2" id="share-summary-cards"></div>
+      </div>
+      <div class="card">
+        <h2>Maize Production — 30% share <span class="n" id="maize-share-count-label"></span></h2>
+        <div id="maize-share-table"></div>
+      </div>
+      <div class="card">
+        <h2>String Beans Plantation — 40% share <span class="n" id="stringbeans-share-count-label"></span></h2>
+        <div id="stringbeans-share-table"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-capital" role="tabpanel" aria-labelledby="tab-capital">
+      <div class="card">
+        <h2>💰 Existing Capital by plantation</h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">
+          Set the capital you started each plantation with. Tomato and Potato are still in the development phase, so they carry no capital yet.
+          Current Capital = Existing Capital + Additional Capital &amp; Loans − Total Expenditure.
+        </p>
+        <div class="grid cols-4" id="capital-inputs"></div>
+        <div class="btn-row"><button class="btn-primary btn-sm" onclick="saveStartingCapital()">Save Existing Capital</button></div>
+      </div>
+
+      <div class="card">
+        <h2>📊 Current Capital <span class="n">(live, per plantation)</span></h2>
+        <div class="grid cols-4" id="capital-cards"></div>
+        <div class="totals-strip" id="capital-grand-strip"></div>
+      </div>
+
+      <div class="card">
+        <h2>➕ Additional Capital &amp; Loans</h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Log any extra capital you inject or loans you take out for a plantation. Both add to that plantation's Current Capital.</p>
+        <div class="grid cols-4">
+          <div class="field">
+            <label for="cap-type">Plantation type</label>
+            <select id="cap-type"></select>
+          </div>
+          <div class="field">
+            <label for="cap-kind">Type</label>
+            <select id="cap-kind">
+              <option value="capital">Additional Capital</option>
+              <option value="loan">Loan</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="cap-amount">Amount (₱)</label>
+            <input type="number" id="cap-amount" min="0" step="0.01" placeholder="e.g. 2000">
+          </div>
+          <div class="field">
+            <label for="cap-date">Date</label>
+            <input type="date" id="cap-date" max="9999-12-31">
+          </div>
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <label for="cap-note">Note (optional — e.g. lender name)</label>
+          <input type="text" id="cap-note" placeholder="e.g. Loan from cooperative">
+        </div>
+        <div class="btn-row"><button class="btn-primary btn-sm" onclick="addCapitalEntry()">+ Add entry</button></div>
+      </div>
+
+      <div class="card">
+        <h2>Capital &amp; loan entries <span class="n" id="capital-entries-count-label"></span></h2>
+        <div id="capital-entries-table"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-advances" role="tabpanel" aria-labelledby="tab-advances">
+      <div class="card">
+        <h2>💵 Worker Cash Advances</h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Record cash a worker borrowed. These are tracked separately from plantation capital and expenditure — use this to keep tabs on what each worker still owes.</p>
+        <div class="grid cols-4">
+          <div class="field">
+            <label for="adv-name">Worker name</label>
+            <input type="text" id="adv-name" placeholder="e.g. Rico">
+          </div>
+          <div class="field">
+            <label for="adv-amount">Amount borrowed (₱)</label>
+            <input type="number" id="adv-amount" min="0" step="0.01" placeholder="e.g. 500">
+          </div>
+          <div class="field">
+            <label for="adv-date">Date</label>
+            <input type="date" id="adv-date" max="9999-12-31">
+          </div>
+          <div class="field">
+            <label for="adv-type">Plantation (optional)</label>
+            <select id="adv-type"><option value="">— none —</option></select>
+          </div>
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <label for="adv-note">Note (optional)</label>
+          <input type="text" id="adv-note" placeholder="e.g. For a family emergency">
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary btn-sm" id="adv-save-btn" onclick="saveAdvance()">+ Add cash advance</button>
+          <button class="btn-ghost btn-sm" id="adv-cancel-btn" onclick="cancelEditAdvance()" style="display:none;">Cancel edit</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Outstanding balances by worker</h2>
+        <div id="advance-worker-summary"></div>
+      </div>
+
+      <div class="card">
+        <h2>All cash advances <span class="n" id="advances-count-label"></span></h2>
+        <div id="advances-table"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-inventory" role="tabpanel" aria-labelledby="tab-inventory">
+      <div class="card">
+        <h2>📦 Inventory &amp; Reorder Tracking</h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Keep a running count of supplies on hand. Update "Current stock" whenever you use or restock an item — the app flags anything at or below its reorder point in red. "Total ever purchased" is pulled automatically from every business + personal item entry on file, for reference only.</p>
+        <div class="grid cols-4">
+          <div class="field">
+            <label for="inv-name">Item name</label>
+            <input type="text" id="inv-name" placeholder="e.g. Fertilizer">
+          </div>
+          <div class="field">
+            <label for="inv-unit">Unit</label>
+            <select id="inv-unit"></select>
+          </div>
+          <div class="field">
+            <label for="inv-stock">Current stock</label>
+            <input type="number" id="inv-stock" min="0" step="0.01" placeholder="e.g. 20">
+          </div>
+          <div class="field">
+            <label for="inv-threshold">Reorder point</label>
+            <input type="number" id="inv-threshold" min="0" step="0.01" placeholder="e.g. 5">
+          </div>
+        </div>
+        <div class="field">
+          <label for="inv-supplier">Supplier (optional)</label>
+          <input type="text" id="inv-supplier" placeholder="e.g. AgriMart Cooperative">
+        </div>
+        <div class="btn-row"><button class="btn-primary btn-sm" onclick="saveInventoryItem()" id="inv-save-btn">+ Add / update item</button></div>
+      </div>
+      <div class="card">
+        <h2>Stock on hand <span class="n" id="inventory-count-label"></span></h2>
+        <div id="inventory-table"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-payroll" role="tabpanel" aria-labelledby="tab-payroll">
+      <div class="card">
+        <h2>🧾 Generate Payroll</h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Pick a pay period. This pulls only the <strong>unpaid</strong> labor from business records in that range (work already marked "Paid" is excluded from what's due), minus outstanding cash advances, for a Net Pay figure. Saving records the payslip below, marks the underlying worker entries as paid, and marks the advances used as repaid.</p>
+        <div class="grid cols-3">
+          <div class="field">
+            <label for="pr-from">Period start</label>
+            <input type="date" id="pr-from" max="9999-12-31">
+          </div>
+          <div class="field">
+            <label for="pr-to">Period end</label>
+            <input type="date" id="pr-to" max="9999-12-31">
+          </div>
+          <div class="field">
+            <label for="pr-type">Plantation (optional)</label>
+            <select id="pr-type"><option value="">All plantations</option></select>
+          </div>
+        </div>
+        <div class="btn-row"><button class="btn-primary btn-sm" onclick="computePayroll()">Compute payroll</button></div>
+      </div>
+      <div class="card" id="payroll-preview-card" style="display:none;">
+        <h2>Payroll preview <span class="n" id="payroll-preview-range"></span></h2>
+        <div id="payroll-preview-table"></div>
+        <div class="btn-row"><button class="btn-success btn-sm" onclick="savePayslips()">💾 Save these payslips, mark paid &amp; deduct advances</button></div>
+      </div>
+      <div class="card">
+        <h2>Payslip history <span class="n" id="payslip-history-count-label"></span></h2>
+        <div id="payslip-history-table"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-planning" role="tabpanel" aria-labelledby="tab-planning">
+      <div class="card">
+        <h2>🗓️ Task &amp; Season Planner</h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Log upcoming plantation tasks — planting windows, fertilization schedules, expected harvest dates — so nothing slips. Overdue, unfinished tasks also surface as Dashboard alerts.</p>
+        <div class="grid cols-4">
+          <div class="field">
+            <label for="plan-title">Task</label>
+            <input type="text" id="plan-title" placeholder="e.g. Apply fertilizer">
+          </div>
+          <div class="field">
+            <label for="plan-type">Plantation</label>
+            <select id="plan-type"></select>
+          </div>
+          <div class="field">
+            <label for="plan-date">Due date</label>
+            <input type="date" id="plan-date" max="9999-12-31">
+          </div>
+          <div class="field">
+            <label for="plan-note">Note (optional)</label>
+            <input type="text" id="plan-note" placeholder="e.g. 2 sacks urea">
+          </div>
+        </div>
+        <div class="btn-row"><button class="btn-primary btn-sm" onclick="addPlanningTask()">+ Add task</button></div>
+      </div>
+      <div class="card">
+        <h2>💰 Monthly Budget vs Actual <span class="n" id="budget-month-label"></span></h2>
+        <p style="color:var(--muted); font-size:12.5px; margin:-8px 0 14px;">Set a monthly spending budget per plantation and see how this month's actual business expenditure compares.</p>
+        <div class="grid cols-4" id="budget-inputs"></div>
+        <div class="btn-row"><button class="btn-primary btn-sm" onclick="saveBudgets()">Save budgets</button></div>
+        <div id="budget-comparison" style="margin-top:16px;"></div>
+      </div>
+      <div class="card">
+        <h2>Upcoming &amp; overdue tasks <span class="n" id="planning-count-label"></span></h2>
+        <div id="planning-table"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-reports" role="tabpanel" aria-labelledby="tab-reports">
+      <div class="card">
+        <h2>Gross Sales by plantation <span class="n">customer sales are added in automatically</span></h2>
+        <p style="color:var(--muted); font-size:12.5px; margin:-8px 0 14px;">Every sale you log on a plantation's "Sell Produce" page is added to that plantation's Gross Sales automatically — no extra step. Use the field below only for revenue that didn't go through a logged customer sale. Net Sales = Total Gross Sales − Business Expenditure, and it's this Net Sales figure that feeds the Harvest Shares split and Net Profit below. Personal expenses are never part of this calculation.</p>
+        <div class="grid cols-4" id="net-sales-inputs"></div>
+        <div class="btn-row"><button class="btn-primary btn-sm" onclick="saveNetSales()">Save Gross Sales</button></div>
+      </div>
+      <div class="card">
+        <h2>Total expenditure &amp; profit by plantation <span class="n">(business only, first record → today)</span></h2>
+        <p style="color:var(--muted); font-size:12.5px; margin:-8px 0 14px;">Calculated live from every business record on file. Personal expenses are excluded entirely.</p>
+        <div class="grid cols-4" id="plantation-totals"></div>
+      </div>
+      <div class="card">
+        <h2>Overview</h2>
+        <div class="grid cols-4" id="stat-cards"></div>
+      </div>
+      <div class="card">
+        <h2>📊 Yield vs Revenue by plantation</h2>
+        <p style="color:var(--muted); font-size:12.5px; margin:-8px 0 14px;">Compares total harvested yield (kg) against Total Gross Income earned for every plantation with recorded harvests.</p>
+        <div class="chart-container" style="height:280px;"><canvas id="yieldRevenueChart" aria-label="Yield versus revenue by plantation chart"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>🛒 Customer Sales <span class="n">auto-updates as you log sales on each plantation's page</span></h2>
+        <div id="report-customer-sales"></div>
+      </div>
+      <div class="card" id="report-sections-card" style="display:none;">
+        <h2>📐 Section Breakdown <span class="n">Section 1 / Section 2 / Section 3</span></h2>
+        <p style="color:var(--muted); font-size:12.5px; margin:-8px 0 14px;">Records without an assigned section are counted under Section 1 by default.</p>
+        <div id="report-sections"></div>
+      </div>
+      <div class="card">
+        <h2>By plantation type</h2>
+        <div id="report-by-type"></div>
+      </div>
+      <div class="card">
+        <h2>By month</h2>
+        <div id="report-by-month"></div>
+      </div>
+      <div class="card">
+        <h2>Top workers by labor cost</h2>
+        <div id="report-top-workers"></div>
+      </div>
+      <div class="card">
+        <h2>Most purchased items</h2>
+        <div id="report-top-items"></div>
+      </div>
+      <div class="card">
+        <h2>Export</h2>
+        <p style="color:var(--muted); font-size:13.5px; margin:0 0 12px;">Download every business record — one row per worker — as a CSV file.</p>
+        <button class="btn-fuchsia" onclick="exportCSV()">⤓ Export CSV</button>
+        <button class="btn-fuchsia" onclick="exportPersonalCSV()" style="margin-left:8px;">⤓ Export Personal CSV</button>
+        <button class="btn-ghost" onclick="exportFilteredCSV()" style="margin-left:8px;">⤓ Export Filtered CSV</button>
+        <button class="btn-ghost" onclick="exportBackup()" style="margin-left:8px;">⤓ Full Backup (JSON)</button>
+        <button class="btn-success" onclick="exportPDFReport()" style="margin-left:8px;">⤓ Export P&amp;L Report (PDF)</button>
+      </div>
+    </section>
+
+    <section class="view" id="view-loans" role="tabpanel" aria-labelledby="tab-loans">
+      <div class="card">
+        <h2>💳 Lender Loans</h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Log a loan from a specific lender along with its interest rate — the app works out the interest amount and the total you'll owe that lender. This is tracked separately from the quick "Additional Capital &amp; Loans" entries in the Capital tab.</p>
+        <div class="grid cols-4">
+          <div class="field">
+            <label for="loan-lender">Lender name</label>
+            <input type="text" id="loan-lender" placeholder="e.g. Maria Santos">
+          </div>
+          <div class="field">
+            <label for="loan-principal">Principal amount (₱)</label>
+            <input type="number" id="loan-principal" min="0" step="0.01" placeholder="e.g. 10000" oninput="updateLoanPreview()">
+          </div>
+          <div class="field">
+            <label for="loan-rate">Interest rate (%)</label>
+            <input type="number" id="loan-rate" min="0" step="0.01" placeholder="e.g. 5" oninput="updateLoanPreview()">
+          </div>
+          <div class="field">
+            <label for="loan-date">Date borrowed</label>
+            <input type="date" id="loan-date" max="9999-12-31">
+          </div>
+        </div>
+        <div class="grid cols-2">
+          <div class="field">
+            <label for="loan-type">Plantation (optional)</label>
+            <select id="loan-type"><option value="">— none —</option></select>
+          </div>
+          <div class="field">
+            <label for="loan-note">Note (optional)</label>
+            <input type="text" id="loan-note" placeholder="e.g. due end of season">
+          </div>
+        </div>
+        <div class="net-sales-readout" id="loan-preview" style="margin-bottom:10px;"></div>
+        <div class="btn-row">
+          <button class="btn-primary btn-sm" id="loan-save-btn" onclick="saveLoan()">+ Add loan</button>
+          <button class="btn-ghost btn-sm" id="loan-cancel-btn" onclick="cancelEditLoan()" style="display:none;">Cancel edit</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Owed by lender</h2>
+        <div id="loan-lender-summary"></div>
+      </div>
+
+      <div class="card">
+        <h2>All lender loans <span class="n" id="loans-count-label"></span></h2>
+        <div id="loans-table"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-plantation-detail" role="tabpanel" aria-labelledby="tab-plantation-detail">
+      <div class="card">
+        <h2 id="pd-title">🌴 Plantation detail</h2>
+        <div class="grid cols-4" id="pd-stats" style="margin-bottom:16px;"></div>
+        <div class="net-sales-readout" id="pd-formula" style="font-size:12.5px;"></div>
+      </div>
+      <div class="card" id="pd-sections-card" style="display:none;">
+        <h2>📐 Section Breakdown <span class="n" id="pd-sections-label"></span></h2>
+        <div class="grid cols-3" id="pd-sections-grid"></div>
+      </div>
+      <div class="card">
+        <h2>✏️ Encode Yield &amp; Pricing</h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Enter this plantation's Total Yield, its Price per kg, and its Current Price per kg — Gross Income is calculated automatically as Total Yield × Current Price per kg. Saving here overrides the totals above (which otherwise sum from your logged harvest records).</p>
+        <div class="grid cols-3">
+          <div class="field">
+            <label for="pd-in-yield">Total Yield (kg)</label>
+            <input type="number" id="pd-in-yield" min="0" step="0.1" placeholder="e.g. 500" oninput="updatePlantationPricingPreview()">
+          </div>
+          <div class="field">
+            <label for="pd-in-price">Price per kg (₱)</label>
+            <input type="number" id="pd-in-price" min="0" step="0.01" placeholder="e.g. 28" oninput="updatePlantationPricingPreview()">
+          </div>
+          <div class="field">
+            <label for="pd-in-current-price">Current Price per kg (₱)</label>
+            <input type="number" id="pd-in-current-price" min="0" step="0.01" placeholder="e.g. 32" oninput="updatePlantationPricingPreview()">
+          </div>
+        </div>
+        <div class="net-sales-readout" id="pd-pricing-preview"></div>
+        <div class="btn-row">
+          <button class="btn-primary btn-sm" onclick="savePlantationPricingOverride()">Save</button>
+          <button class="btn-ghost btn-sm" onclick="clearPlantationPricingOverride()">Clear override (use logged records instead)</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>🛒 Sell Produce <span class="n">customer sales for this plantation</span></h2>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 14px;">Log a sale to a customer — enter the quantity and the current price, and Total Cost is calculated automatically. Total Sales for this plantation is summed below.</p>
+        <div class="field" id="sale-section-field" style="display:none;">
+          <label for="sale-section">Section</label>
+          <select id="sale-section"></select>
+        </div>
+        <div class="grid cols-3">
+          <div class="field">
+            <label for="sale-customer">Customer name</label>
+            <input type="text" id="sale-customer" placeholder="e.g. Maria Santos">
+          </div>
+          <div class="field">
+            <label for="sale-location">Location</label>
+            <input type="text" id="sale-location" placeholder="e.g. Diplahan, Zamboanga Sibugay">
+          </div>
+          <div class="field">
+            <label for="sale-cellphone">Cellphone number</label>
+            <input type="tel" id="sale-cellphone" placeholder="e.g. 0917 123 4567">
+          </div>
+        </div>
+        <div class="grid cols-3">
+          <div class="field">
+            <label for="sale-quantity">Quantity (kg)</label>
+            <input type="number" id="sale-quantity" min="0" step="0.01" placeholder="e.g. 50" oninput="updateSalePreview()">
+          </div>
+          <div class="field">
+            <label for="sale-price">Current Price (₱ per kg)</label>
+            <input type="number" id="sale-price" min="0" step="0.01" placeholder="e.g. 35" oninput="updateSalePreview()">
+          </div>
+          <div class="field">
+            <label for="sale-date">Date</label>
+            <input type="date" id="sale-date" max="9999-12-31">
+          </div>
+        </div>
+        <div class="net-sales-readout" id="sale-preview"></div>
+        <div class="btn-row">
+          <button class="btn-primary btn-sm" id="sale-save-btn" onclick="saveSale()">+ Record sale</button>
+          <button class="btn-ghost btn-sm" id="sale-cancel-btn" onclick="cancelEditSale()" style="display:none;">Cancel edit</button>
+        </div>
+        <div class="totals-strip" id="sale-totals-strip" style="margin-top:16px;"></div>
+      </div>
+      <div class="card">
+        <h2>Sales history <span class="n" id="pd-sales-count-label"></span></h2>
+        <div id="pd-sales-table"></div>
+      </div>
+      <div class="card">
+        <h2>📈 Expenditure vs Net Income <span class="n" id="pd-chart-range-label"></span></h2>
+        <div class="chart-container" style="height:260px;"><canvas id="pdChart" aria-label="Plantation expenditure versus net income chart"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Items purchased <span class="n" id="pd-items-count-label"></span></h2>
+        <div id="pd-items-table"></div>
+      </div>
+      <div class="card">
+        <h2>Records for this plantation <span class="n" id="pd-records-count-label"></span></h2>
+        <div id="pd-records-table"></div>
+      </div>
+    </section>
+
+    <footer class="bottom-indicators" onclick="switchToAccountTab()" role="contentinfo" aria-label="Summary statistics">
+      <div class="indicator">
+        <span class="label">Business Expenditure</span>
+        <span class="value" id="bottom-business-total">₱0.00</span>
+        <span class="sub">all plantation records</span>
+      </div>
+      <div class="indicator">
+        <span class="label">Personal Expenditure</span>
+        <span class="value personal" id="bottom-personal-total">₱0.00</span>
+        <span class="sub">personal account</span>
+      </div>
+      <div class="indicator">
+        <span class="label">Total Business and Personal Expenses</span>
+        <span class="value merged" id="bottom-merged-total">₱0.00</span>
+        <span class="sub">business + personal</span>
+      </div>
+      <div class="indicator">
+        <span class="label">Most Purchased Item</span>
+        <span class="value top-item" id="bottom-top-item">—</span>
+        <span class="sub" id="bottom-top-item-sub">no purchases yet</span>
+      </div>
+    </footer>
+  </div>
+
+  <div class="modal-backdrop" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+    <div class="modal">
+      <h3 id="confirm-modal-title">Delete this record?</h3>
+      <p id="confirm-modal-text">This can't be undone.</p>
+      <div class="btn-row">
+        <button class="btn-danger" id="confirm-yes">Delete</button>
+        <button class="btn-ghost" id="confirm-no">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
